@@ -55,6 +55,13 @@ public:
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Azul|Level")
     bool RestartLevel;
 
+    //------------------------------------FINALES
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Azul|Finales")
+    bool bDiscusongaFinal = false;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Azul|Finales")
+    bool bLlamadongaFinal = false;
+
     //---------------------------------------------------DIALOGOS
 
     /* Diálogo actualmente activo (si lo hay) */
