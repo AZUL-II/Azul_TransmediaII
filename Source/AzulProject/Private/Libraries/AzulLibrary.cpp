@@ -27,18 +27,21 @@ bool UAzulLibrary::IsStringAlphabeticNoSpaces(const FString& Input)
 
 void UAzulLibrary::SwitchLevelByName(const FString& LevelName, EGameplayLevelBranch& Branch)
 {
-    if (LevelName == TEXT("LV_Gameplay_01"))      Branch = EGameplayLevelBranch::LV_Gameplay_01;
-    else if (LevelName == TEXT("LV_Gameplay_02")) Branch = EGameplayLevelBranch::LV_Gameplay_02;
-    else if (LevelName == TEXT("LV_Gameplay_03")) Branch = EGameplayLevelBranch::LV_Gameplay_03;
-    else if (LevelName == TEXT("LV_Gameplay_04")) Branch = EGameplayLevelBranch::LV_Gameplay_04;
-    else if (LevelName == TEXT("LV_Gameplay_05")) Branch = EGameplayLevelBranch::LV_Gameplay_05;
-    else if (LevelName == TEXT("LV_Gameplay_06")) Branch = EGameplayLevelBranch::LV_Gameplay_06;
-    else if (LevelName == TEXT("LV_Gameplay_07")) Branch = EGameplayLevelBranch::LV_Gameplay_07;
-    else if (LevelName == TEXT("LV_Gameplay_08")) Branch = EGameplayLevelBranch::LV_Gameplay_08;
-    else if (LevelName == TEXT("LV_Gameplay_09")) Branch = EGameplayLevelBranch::LV_Gameplay_09;
-    else if (LevelName == TEXT("LV_Gameplay_10")) Branch = EGameplayLevelBranch::LV_Gameplay_10;
-    else if (LevelName == TEXT("LV_Gameplay_11")) Branch = EGameplayLevelBranch::LV_Gameplay_11;
-    else                                          Branch = EGameplayLevelBranch::LV_Gameplay_12;
+    if (LevelName == TEXT("LV_Gameplay_01"))             Branch = EGameplayLevelBranch::LV_Gameplay_01;
+    else if (LevelName == TEXT("LV_Gameplay_02"))        Branch = EGameplayLevelBranch::LV_Gameplay_02;
+    else if (LevelName == TEXT("LV_Gameplay_03"))        Branch = EGameplayLevelBranch::LV_Gameplay_03;
+    else if (LevelName == TEXT("LV_Gameplay_04"))        Branch = EGameplayLevelBranch::LV_Gameplay_04;
+    else if (LevelName == TEXT("LV_Gameplay_05"))        Branch = EGameplayLevelBranch::LV_Gameplay_05;
+    else if (LevelName == TEXT("LV_Gameplay_06"))        Branch = EGameplayLevelBranch::LV_Gameplay_06;
+    else if (LevelName == TEXT("LV_Gameplay_07"))        Branch = EGameplayLevelBranch::LV_Gameplay_07;
+    else if (LevelName == TEXT("LV_Gameplay_08"))        Branch = EGameplayLevelBranch::LV_Gameplay_08;
+    else if (LevelName == TEXT("LV_Gameplay_09"))        Branch = EGameplayLevelBranch::LV_Gameplay_09;
+    else if (LevelName == TEXT("LV_Gameplay_10"))        Branch = EGameplayLevelBranch::LV_Gameplay_10;
+    else if (LevelName == TEXT("LV_Gameplay_11"))        Branch = EGameplayLevelBranch::LV_Gameplay_11;
+    else if (LevelName == TEXT("LV_Gameplay_12"))        Branch = EGameplayLevelBranch::LV_Gameplay_12;
+    else if (LevelName == TEXT("LV_Gameplay_13"))        Branch = EGameplayLevelBranch::LV_Gameplay_13;
+    else if (LevelName == TEXT("LV_Casa_ARCH_Atico"))    Branch = EGameplayLevelBranch::LV_Casa_ARCH_Atico;
+    else                                                 Branch = EGameplayLevelBranch::LV_Gameplay_01; // o el default que quieras
 }
 
 FString UAzulLibrary::ReplaceSonName(const UObject* WorldContextObject, const FString& InputText)

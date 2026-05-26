@@ -20,7 +20,9 @@ enum class EGameplayLevelBranch : uint8
     LV_Gameplay_09 UMETA(DisplayName = "LV_Gameplay_09"),
     LV_Gameplay_10 UMETA(DisplayName = "LV_Gameplay_10"),
     LV_Gameplay_11 UMETA(DisplayName = "LV_Gameplay_11"),
-    LV_Gameplay_12 UMETA(DisplayName = "LV_Gameplay_12")
+    LV_Gameplay_12 UMETA(DisplayName = "LV_Gameplay_12"),
+    LV_Gameplay_13 UMETA(DisplayName = "LV_Gameplay_13"),
+    LV_Casa_ARCH_Atico UMETA(DisplayName = "LV_Casa_ARCH_Atico")
 };
 /**
  * 
