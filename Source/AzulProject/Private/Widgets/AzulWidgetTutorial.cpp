@@ -4,6 +4,7 @@
 #include "AzulSubsystem/AzulTutorialSubsystem.h"
 #include "AzulSubsystem/AzulGameSubsystem.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Libraries/AzulLibrary.h"
 
 void UAzulWidgetTutorial::NativeConstruct()
 {
@@ -64,20 +65,16 @@ void UAzulWidgetTutorial::NativeConstruct()
 
     if (TareaText_1)
     {
-        FString Text1 = FString::Printf(
-            TEXT("Activate the thread to search for %s"),
-            *SonNameString
-        );
-        TareaText_1->SetText(FText::FromString(Text1));
+        const FString RawText = TEXT("Activate the thread to search for SonName");
+        const FString FinalText = UAzulLibrary::ReplaceSonName(this, RawText);
+        TareaText_1->SetText(FText::FromString(FinalText));
     }
 
     if (TareaText_2)
     {
-        FString Text2 = FString::Printf(
-            TEXT("Move towards %s"),
-            *SonNameString
-        );
-        TareaText_2->SetText(FText::FromString(Text2));
+        const FString RawText = TEXT("Move towards SonName");
+        const FString FinalText = UAzulLibrary::ReplaceSonName(this, RawText);
+        TareaText_2->SetText(FText::FromString(FinalText));
     }
 
     if (TareaText_3)
@@ -303,14 +300,14 @@ FReply UAzulWidgetTutorial::NativeOnKeyDown(
     {
         const FKey PressedKey = InKeyEvent.GetKey();
 
-        // ✅ SOLO ENTER
+        // SOLO ENTER
         if (PressedKey == EKeys::Enter)
         {
             OnContinueButtonPressed();
             return FReply::Handled();
         }
 
-        // ❌ Space se consume explícitamente
+        // Space se consume explícitamente
         if (PressedKey == EKeys::SpaceBar)
         {
             return FReply::Handled();
@@ -353,11 +350,6 @@ void UAzulWidgetTutorial::OnContinueButtonPressed()
         //RESTAURAR INPUT A JUEGO
         if (APlayerController* PC = GetWorld()->GetFirstPlayerController())
         {
-            //PC->bShowMouseCursor = true;
-
-            //FInputModeGameOnly InputMode;
-            //PC->SetInputMode(InputMode);
-
             FInputModeGameAndUI InputMode;
             PC->SetInputMode(InputMode);
             PC->bShowMouseCursor = true;
@@ -447,13 +439,8 @@ void UAzulWidgetTutorial::OnContinueButtonPressed()
                 //Character->UnblockPlayerControl();
                 Character->OpenMirilla();
 
-                FString TutorialString = FString::Printf(
-                    TEXT("%s is crying, what could be wrong with him?"),
-                    *SonNameString
-                );
-
-                SetTutorialText(TutorialString);
-
+                const FString RawText = TEXT("SonName is crying, what could be wrong with him?");
+                SetTutorialText(RawText);
 
             }
         }
@@ -571,13 +558,8 @@ void UAzulWidgetTutorial::CloseAllInteractHelp()
     {
         if (AAzulCharacterBase* Character = Cast<AAzulCharacterBase>(PC->GetPawn()))
         {
-
-            FString TutorialString = FString::Printf(
-                TEXT("%s is crying, what could be wrong with him?"),
-                *SonNameString
-            );
-
-            SetTutorialText(TutorialString);
+            const FString RawText = TEXT("SonName is crying, what could be wrong with him?");
+            SetTutorialText(RawText);
         }
     }
 }
@@ -600,7 +582,8 @@ void UAzulWidgetTutorial::SetTutorialTextWithDelay(const FString& NewText, float
         return;
     }
 
-    TutorialText->SetText(FText::FromString(NewText));
+    const FString FinalText = UAzulLibrary::ReplaceSonName(this, NewText);
+    TutorialText->SetText(FText::FromString(FinalText));
     TextBorder->SetVisibility(ESlateVisibility::Visible);
 
     // Si Delay es 0, se queda fijo para siempre
@@ -638,8 +621,8 @@ void UAzulWidgetTutorial::SetTutorialText(const FString& NewText)
         TextBorder->SetVisibility(ESlateVisibility::Hidden);
         return;
     }
-
-    TutorialText->SetText(FText::FromString(NewText));
+    const FString FinalText = UAzulLibrary::ReplaceSonName(this, NewText);
+    TutorialText->SetText(FText::FromString(FinalText));
     TextBorder->SetVisibility(ESlateVisibility::Visible);
 }
 

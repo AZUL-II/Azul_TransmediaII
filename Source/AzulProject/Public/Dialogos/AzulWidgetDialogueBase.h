@@ -17,6 +17,8 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
 #include "AzulWidgetDialogueBase.generated.h"
 
 class UAzulDialogue;
@@ -104,6 +106,8 @@ protected:
 
     virtual void NativeConstruct() override;
 
+    virtual void NativeDestruct() override;
+
     virtual FReply NativeOnMouseButtonDown(
         const FGeometry& InGeometry,
         const FPointerEvent& InMouseEvent
@@ -126,4 +130,41 @@ protected:
 
     UFUNCTION()
     void ShowDecisionButtons();
+
+
+    //SONIDOS
+public:
+
+        /** Cue para Melissa */
+        UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Azul|Dialogue|Audio")
+        USoundCue* MelissaCue = nullptr;
+
+        /** Cue para SonName */
+        UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Azul|Dialogue|Audio")
+        USoundCue* SonNameCue = nullptr;
+
+        /** Cue para Beector */
+        UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Azul|Dialogue|Audio")
+        USoundCue* BeectorCue = nullptr;
+
+protected:
+
+    /** Audio actualmente en reproducción para evitar solapes */
+    UPROPERTY(Transient)
+    UAudioComponent* ActiveDialogueAudioComponent = nullptr;
+
+    UPROPERTY(Transient)
+    FString LastPlayedSpeakerName;
+
+    UPROPERTY(Transient)
+    FString LastPlayedDialogueText;
+
+    UFUNCTION()
+    void PlaySpeakerCueByName(const FString& SpeakerName);
+
+    UFUNCTION()
+    void StopCurrentSpeakerCue();
+
+    UFUNCTION()
+    void ClearSpeakerAudioState();
 };

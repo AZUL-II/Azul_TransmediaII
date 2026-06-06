@@ -23,6 +23,9 @@
 #include "Input/Reply.h"
 #include "InputCoreTypes.h"
 #include "Libraries/AzulLibrary.h"
+#include "Kismet/GameplayStatics.h"
+#include "Components/AudioComponent.h"
+#include "Sound/SoundCue.h"
 
 void UAzulWidgetDialogueBase::NativeConstruct()
 {
@@ -57,6 +60,12 @@ void UAzulWidgetDialogueBase::NativeConstruct()
         ChoiceButton4->OnClicked.RemoveDynamic(this, &UAzulWidgetDialogueBase::HandleChoice4);
         ChoiceButton4->OnClicked.AddUniqueDynamic(this, &UAzulWidgetDialogueBase::HandleChoice4);
     }
+}
+
+void UAzulWidgetDialogueBase::NativeDestruct()
+{
+    ClearSpeakerAudioState();
+    Super::NativeDestruct();
 }
 
 void UAzulWidgetDialogueBase::PressContinue()
@@ -97,6 +106,11 @@ void UAzulWidgetDialogueBase::SetDialogueText(const FString& NewText)
     }
 
     DialogueTextBlock->SetText(FText::FromString(NewText));
+
+    if (NewText.TrimStartAndEnd().IsEmpty())
+    {
+        ClearSpeakerAudioState();
+    }
 }
 
 FString UAzulWidgetDialogueBase::GetDialogueTextString() const
@@ -144,15 +158,11 @@ void UAzulWidgetDialogueBase::RefreshDecisionUI()
 
     if (!Dialogue || !Dialogue->CurrentRow)
     {
-        if (TextName)
-        {
-            TextName->SetText(FText::GetEmpty());
-        }
+        ClearSpeakerAudioState();
 
-        if (ButtonContinue)
-        {
-            ButtonContinue->SetVisibility(ESlateVisibility::Collapsed);
-        }
+        if (TextName) TextName->SetText(FText::GetEmpty());
+
+        if (ButtonContinue) ButtonContinue->SetVisibility(ESlateVisibility::Collapsed);
 
         if (ChoiceButton1) ChoiceButton1->SetVisibility(ESlateVisibility::Collapsed);
         if (ChoiceButton2) ChoiceButton2->SetVisibility(ESlateVisibility::Collapsed);
@@ -230,17 +240,35 @@ void UAzulWidgetDialogueBase::SetSpeakerName(const FString& NewName)
         return;
     }
 
-    if (BorderName && TextName)
+    FString FinalText = UAzulLibrary::ReplaceSonName(this, NewName);
+    FinalText = FinalText.TrimStartAndEnd();
+
+    TextName->SetText(FText::FromString(FinalText));
+
+    if (BorderName)
     {
         BorderName->SetVisibility(
-            TextName->GetText().IsEmpty()
-            ? ESlateVisibility::Hidden
-            : ESlateVisibility::Visible
+            FinalText.IsEmpty() ? ESlateVisibility::Hidden : ESlateVisibility::Visible
         );
     }
 
-    FString FinalText = UAzulLibrary::ReplaceSonName(this, NewName);
-    TextName->SetText(FText::FromString(FinalText));
+    if (FinalText.IsEmpty())
+    {
+        ClearSpeakerAudioState();
+        return;
+    }
+
+    const FString CurrentDialogueText = GetDialogueTextString();
+    const bool bLineChanged =
+        (FinalText != LastPlayedSpeakerName) ||
+        (CurrentDialogueText != LastPlayedDialogueText);
+
+    if (bLineChanged)
+    {
+        LastPlayedSpeakerName = FinalText;
+        LastPlayedDialogueText = CurrentDialogueText;
+        PlaySpeakerCueByName(FinalText);
+    }
 }
 
 void UAzulWidgetDialogueBase::HandleChoice1()
@@ -263,3 +291,66 @@ void UAzulWidgetDialogueBase::HandleChoice4()
     PressChoice(3);
 }
 
+void UAzulWidgetDialogueBase::StopCurrentSpeakerCue()
+{
+    if (ActiveDialogueAudioComponent)
+    {
+        ActiveDialogueAudioComponent->Stop();
+        ActiveDialogueAudioComponent = nullptr;
+    }
+}
+
+void UAzulWidgetDialogueBase::PlaySpeakerCueByName(const FString& SpeakerName)
+{
+    FString FinalSpeakerName = UAzulLibrary::ReplaceSonName(this, SpeakerName);
+    FinalSpeakerName = FinalSpeakerName.TrimStartAndEnd();
+
+    USoundCue* CueToPlay = nullptr;
+
+    if (FinalSpeakerName.Equals(TEXT("Melissa"), ESearchCase::IgnoreCase))
+    {
+        CueToPlay = MelissaCue;
+    }
+    else if (FinalSpeakerName.Equals(TEXT("Beector"), ESearchCase::IgnoreCase))
+    {
+        CueToPlay = BeectorCue;
+    }
+    else
+    {
+        if (UGameInstance* GI = GetGameInstance())
+        {
+            if (UAzulGameSubsystem* GameSubsystem = GI->GetSubsystem<UAzulGameSubsystem>())
+            {
+                const FString CurrentSonName = GameSubsystem->SonName.TrimStartAndEnd();
+
+                if (!CurrentSonName.IsEmpty() &&
+                    FinalSpeakerName.Equals(CurrentSonName, ESearchCase::IgnoreCase))
+                {
+                    CueToPlay = SonNameCue;
+                }
+            }
+        }
+
+        if (!CueToPlay &&
+            FinalSpeakerName.Equals(TEXT("SonName"), ESearchCase::IgnoreCase))
+        {
+            CueToPlay = SonNameCue;
+        }
+    }
+
+    StopCurrentSpeakerCue();
+
+    if (!CueToPlay)
+    {
+        return;
+    }
+
+    ActiveDialogueAudioComponent = UGameplayStatics::SpawnSound2D(this, CueToPlay);
+}
+
+void UAzulWidgetDialogueBase::ClearSpeakerAudioState()
+{
+    StopCurrentSpeakerCue();
+    LastPlayedSpeakerName.Empty();
+    LastPlayedDialogueText.Empty();
+}
