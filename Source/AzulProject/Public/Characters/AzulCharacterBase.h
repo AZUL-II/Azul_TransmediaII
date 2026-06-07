@@ -47,6 +47,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Azul|Level Check")
 	int32 MinimumGameplayLevelForMeshChange = 11;
 
+	//--------------------------------------MATERAL PESADILLA
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Azul|Material")
+	UMaterialInterface* GMP7MaterialMom = nullptr;
+
 	//-------------------------INTERACTUAR----------------------------------------------
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Azul|Interactuable")

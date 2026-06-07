@@ -178,17 +178,29 @@ void UAzulWidgetDialogueBase::RefreshDecisionUI()
 
     if (ButtonContinue)
     {
-        ButtonContinue->SetVisibility(ESlateVisibility::Visible);
-        ButtonContinue->SetIsEnabled(!bIsDecision);
+        if (bIsDecision)
+        {
+            // En decisiones, ocultar completamente el botón
+            ButtonContinue->SetVisibility(ESlateVisibility::Collapsed);
+        }
+        else
+        {
+            // En líneas normales, mostrarlo y habilitarlo
+            ButtonContinue->SetVisibility(ESlateVisibility::Visible);
+            ButtonContinue->SetIsEnabled(true);
+        }
     }
 
-    auto SetupChoiceLabel = [](UTextBlock* Label, const FString& Text)
+    auto SetupChoiceLabel = [this](UTextBlock* Label, const FString& Text)
+    {
+        if (!Label)
         {
-            if (Label)
-            {
-                Label->SetText(FText::FromString(Text));
-            }
-        };
+            return;
+        }
+
+        const FString FinalText = UAzulLibrary::ReplaceSonName(this, Text);
+        Label->SetText(FText::FromString(FinalText));
+    };
 
     SetupChoiceLabel(ChoiceText1, NumChoices > 0 ? Dialogue->CurrentRow->ChoicesText[0] : FString());
     SetupChoiceLabel(ChoiceText2, NumChoices > 1 ? Dialogue->CurrentRow->ChoicesText[1] : FString());
