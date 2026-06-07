@@ -87,7 +87,7 @@ void AAzulCharacterBase::BeginPlay()
 
     UE_LOG(LogAzulCharacter, Warning, TEXT("[BeginPlay] ActiveStoryTags inicializados"));
 
-    //CAMBIA DE SKELETAL MESH A PARTIR DEL GAMEPLAY 11 AL DEL NIÑO.
+    //-----------------------------------------------------------------CAMBIA DE SKELETAL MESH A PARTIR DEL GAMEPLAY 11 AL DEL NIÑO.
     const FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(this, true);
 
     // Comprueba que el nombre empieza por "LV_Gameplay_"
@@ -103,6 +103,26 @@ void AAzulCharacterBase::BeginPlay()
             if (SonMesh)
             {
                 GetMesh()->SetSkeletalMesh(SonMesh);
+            }
+        }
+
+        // 2) Si estamos en Gameplay 7, cambiar el material del mesh actual por la Material Instance
+        if (CurrentGameplayLevelNumber == 7)
+        {
+            if (GMP7MaterialMom && GetMesh())
+            {
+                GetMesh()->SetMaterial(0, GMP7MaterialMom);
+                GetMesh()->SetMaterial(1, GMP7MaterialMom);
+
+                UE_LOG(LogAzulCharacter, Warning,
+                    TEXT("[BeginPlay] Applying GMP7MaterialInstance to mesh in level %s"),
+                    *CurrentLevelName);
+            }
+            else
+            {
+                UE_LOG(LogAzulCharacter, Warning,
+                    TEXT("[BeginPlay] GMP7MaterialInstance or Mesh is NULL in level %s"),
+                    *CurrentLevelName);
             }
         }
     }
@@ -566,7 +586,7 @@ void AAzulCharacterBase::CheckCrosshairTrace()
 
             const FString ActorName = Hit.GetActor()->GetName();
 
-            // 🔒 ARMARIOS → solo Pomo / Pomo1
+            // ARMARIOS → solo Pomo / Pomo1
             if (ActorName.Contains(TEXT("BP_Armarios")))
             {
                 bCanSetInteractable = false;
@@ -583,7 +603,7 @@ void AAzulCharacterBase::CheckCrosshairTrace()
                 }
             }
 
-            // 🔒 BAULONGO → solo ParaAbrir
+            // BAULONGO → solo ParaAbrir
             else if (ActorName.Contains(TEXT("BP_Baulongo")))
             {
                 bCanSetInteractable = false;
@@ -600,7 +620,7 @@ void AAzulCharacterBase::CheckCrosshairTrace()
                 }
             }
 
-            // ✅ Solo si se puede interactuar
+            // Solo si se puede interactuar
             if (bCanSetInteractable &&
                 Hit.GetActor()->GetClass()->ImplementsInterface(
                     UAzulInteractuableInterface::StaticClass()))
@@ -609,7 +629,7 @@ void AAzulCharacterBase::CheckCrosshairTrace()
                     TScriptInterface<IAzulInteractuableInterface>(Hit.GetActor());
             }
 
-            // 🔑 AQUÍ ESTÁ LA CLAVE
+            // AQUÍ ESTÁ LA CLAVE
             bValidHit = bCanSetInteractable;
             CurrentExceptionActor = bCanSetInteractable ? Hit.GetActor() : nullptr;
         }
